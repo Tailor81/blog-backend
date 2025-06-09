@@ -2,10 +2,11 @@
 require_once 'api/headers.php';
 
 // Get the requested page
-$page = isset($_GET['page']) ? $_GET['page'] : 'blog';
+$page = isset($_GET['page']) ? $_GET['page'] : 'index';
 
 // Map the page to the corresponding HTML file
 $pages = [
+    'index' => 'index.html',
     'blog' => 'blog.html',
     'single' => 'single.html'
 ];

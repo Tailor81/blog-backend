@@ -18,12 +18,30 @@ class Blog {
         $this->conn = $db;
     }
 
-    // Read all blog posts
-    public function read() {
-        $query = "SELECT * FROM " . $this->table_name . " ORDER BY created_at DESC";
+    // Read all blog posts with pagination
+    public function read($page = 1, $per_page = 3) {
+        $offset = ($page - 1) * $per_page;
+        
+        $query = "SELECT * FROM " . $this->table_name . " 
+                 WHERE status = 'published' 
+                 ORDER BY created_at DESC 
+                 LIMIT :offset, :per_page";
+                 
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':per_page', $per_page, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt;
+    }
+
+    // Get total count of published posts
+    public function getTotalPosts() {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table_name . " WHERE status = 'published'";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        return $stmt;
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
     }
 
     // Read single blog post
